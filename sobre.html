@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>Fynext — Sobre nós</title>
+    <style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{--ink:#0a0a08;--paper:#f2ede6;--accent:#e8460a;--rule:rgba(242,237,230,0.06);--rule2:rgba(242,237,230,0.1);--mono:"DM Mono",monospace;--display:"Bebas Neue",sans-serif;--body:"Syne",sans-serif;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);cursor:none;overflow-x:hidden;}
+#cursor{position:fixed;width:9px;height:9px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cursor-ring{position:fixed;width:34px;height:34px;border:1px solid rgba(232,70,10,.45);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;}
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);background-size:90px 90px;}
+canvas.neural-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:.3;}
+header{position:fixed;top:0;left:0;right:0;z-index:100;height:70px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 48px;border-bottom:1px solid var(--rule);background:rgba(10,10,8,.88);backdrop-filter:blur(14px);}
+.logo-wrap{display:flex;align-items:center;gap:16px;}
+.logo-wrap svg{width:52px;height:52px;}
+.logo-text{font-family:var(--display);font-size:2rem;letter-spacing:.08em;color:var(--paper);line-height:1;}
+.logo-text em{color:var(--accent);font-style:normal;}
+nav ul{display:flex;gap:44px;list-style:none;}
+nav ul li a{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:rgba(242,237,230,.4);transition:color .3s;position:relative;}
+nav ul li a::before{content:"/ ";color:var(--accent);opacity:0;transition:opacity .3s;}
+nav ul li a:hover,nav ul li a.cur{color:var(--paper);}
+nav ul li a:hover::before,nav ul li a.cur::before{opacity:1;}
+.hd-right{display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:var(--mono);font-size:.6rem;color:rgba(242,237,230,.28);letter-spacing:.08em;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 8px #3ecf8e;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* SECTIONS */
+.section{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;border-bottom:1px solid var(--rule);overflow:hidden;}
+.section:first-of-type{padding-top:70px;}
+
+.s-left{display:flex;flex-direction:column;justify-content:center;padding:80px 64px;position:relative;border-right:1px solid var(--rule);}
+.s-right{display:flex;align-items:center;justify-content:center;padding:60px;position:relative;background:rgba(232,70,10,.02);}
+
+/* BIG watermark number */
+.s-num-bg{position:absolute;bottom:-30px;left:32px;font-family:var(--display);font-size:clamp(120px,16vw,200px);color:rgba(232,70,10,.03);line-height:1;user-select:none;pointer-events:none;}
+
+.eyebrow{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.eyebrow::before{content:"";display:inline-block;width:24px;height:1px;background:var(--accent);}
+
+.s-title{font-family:var(--display);font-size:clamp(3rem,4.5vw,5rem);line-height:.92;letter-spacing:.02em;margin-bottom:24px;}
+.s-desc{font-size:.88rem;color:rgba(242,237,230,.5);line-height:1.8;max-width:420px;}
+
+/* Cards grid */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:28px;}
+.card{background:var(--ink);padding:18px 20px;transition:background .3s;}
+.card:hover{background:#111;}
+.card-icon{font-size:1.2rem;margin-bottom:8px;}
+.card-t{font-family:var(--mono);font-size:.58rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.card-d{font-size:.76rem;color:rgba(242,237,230,.4);line-height:1.6;}
+
+/* Reasons */
+.reasons{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);margin-top:28px;}
+.reason{display:flex;align-items:flex-start;gap:20px;padding:18px 20px;border-bottom:1px solid var(--rule);}
+.reason:last-child{border-bottom:none;}
+.r-num{font-family:var(--display);font-size:2rem;color:rgba(232,70,10,.2);line-height:1;min-width:36px;}
+.r-title{font-size:.82rem;font-weight:700;color:var(--paper);margin-bottom:4px;}
+.r-desc{font-size:.76rem;color:rgba(242,237,230,.4);line-height:1.6;}
+
+/* Vision block */
+.vision-block{margin-top:28px;padding:28px;border:1px solid rgba(232,70,10,.18);position:relative;}
+.vision-block::before{content:"";position:absolute;top:0;left:0;width:40px;height:2px;background:var(--accent);}
+.vision-text{font-size:.88rem;color:rgba(242,237,230,.5);line-height:1.85;}
+.vision-text strong{color:var(--paper);}
+
+/* Image-like boxes with corner marks */
+.img-box{position:relative;width:80%;max-width:380px;}
+.img-box img{width:100%;height:auto;filter:grayscale(20%) contrast(1.05);border:1px solid rgba(232,70,10,.1);}
+.img-box::before,.img-box::after{content:"";position:absolute;width:14px;height:14px;border-color:rgba(232,70,10,.4);border-style:solid;}
+.img-box::before{top:-6px;left:-6px;border-width:1px 0 0 1px;}
+.img-box::after{bottom:-6px;right:-6px;border-width:0 1px 1px 0;}
+
+/* Scan right panels */
+.s-right::before{content:"";position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,70,10,.2),transparent);animation:scan 5s ease-in-out infinite;}
+@keyframes scan{0%{top:10%;opacity:0}8%{opacity:1}92%{opacity:1}100%{top:90%;opacity:0}}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.vis{opacity:1;transform:translateY(0);}
+    </style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="grid-bg"></div>
+<canvas class="neural-canvas"></canvas>
+
+<header>
+    <div class="logo-wrap">
+        <svg viewBox="0 0 52 52" fill="none">
+            <polygon points="26,3 47,14.5 47,37.5 26,49 5,37.5 5,14.5" fill="none" stroke="#e8460a" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="26" cy="26" r="3.5" fill="#e8460a"/>
+            <circle cx="26" cy="8"  r="2" fill="#e8460a" opacity=".65"/>
+            <circle cx="26" cy="44" r="2" fill="#e8460a" opacity=".65"/>
+            <circle cx="11" cy="17" r="2" fill="#e8460a" opacity=".65"/>
+            <circle cx="41" cy="17" r="2" fill="#e8460a" opacity=".65"/>
+            <circle cx="11" cy="35" r="2" fill="#e8460a" opacity=".65"/>
+            <circle cx="41" cy="35" r="2" fill="#e8460a" opacity=".65"/>
+            <line x1="26" y1="26" x2="26" y2="8"  stroke="#e8460a" stroke-width=".8" opacity=".35"/>
+            <line x1="26" y1="26" x2="26" y2="44" stroke="#e8460a" stroke-width=".8" opacity=".35"/>
+            <line x1="26" y1="26" x2="11" y2="17" stroke="#e8460a" stroke-width=".8" opacity=".35"/>
+            <line x1="26" y1="26" x2="41" y2="17" stroke="#e8460a" stroke-width=".8" opacity=".35"/>
+            <line x1="26" y1="26" x2="11" y2="35" stroke="#e8460a" stroke-width=".8" opacity=".35"/>
+            <line x1="26" y1="26" x2="41" y2="35" stroke="#e8460a" stroke-width=".8" opacity=".35"/>
+            <circle cx="26" cy="26" r="10" fill="none" stroke="#e8460a" stroke-width=".5" stroke-dasharray="3 5" opacity=".3"/>
+        </svg>
+        <div class="logo-text">FY<em>N</em>EXT</div>
+    </div>
+    <nav><ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="sobre.html" class="cur">Sobre</a></li>
+        <li><a href="portifolio.html">Portfólio</a></li>
+    </ul></nav>
+    <div class="hd-right"><span class="live-dot"></span>SISTEMAS ONLINE — SP, BR</div>
+</header>
+
+<!-- SEC 1 — Quem Somos -->
+<section class="section">
+    <div class="s-left">
+        <div class="s-num-bg">01</div>
+        <div class="eyebrow reveal">Quem somos</div>
+        <h2 class="s-title reveal">FYNEXT<br>DESENVOLVIMENTO</h2>
+        <p class="s-desc reveal">O nome Fynext carrega nossa essência: o olhar atento ao que vem a seguir. Não entregamos apenas linhas de código — entregamos ativos estratégicos. Somos desenvolvedores, designers e estrategistas apaixonados por resolver problemas reais.</p>
+    </div>
+    <div class="s-right">
+        <div class="img-box reveal">
+            <img src="./img/escritorio.png" alt="Escritório Fynext">
+        </div>
+    </div>
+</section>
+
+<!-- SEC 2 — DNA -->
+<section class="section">
+    <div class="s-left">
+        <div class="s-num-bg">02</div>
+        <div class="eyebrow reveal">Nosso DNA</div>
+        <h2 class="s-title reveal">TECNOLOGIA<br>SEM<br>FRONTEIRAS</h2>
+        <p class="s-desc reveal">Nossa expertise é vasta e profunda. Atuamos em todas as camadas do desenvolvimento digital para garantir uma experiência end-to-end.</p>
+        <div class="cards reveal">
+            <div class="card"><div class="card-icon">⚙️</div><div class="card-t">Sistemas</div><div class="card-d">Softwares sob medida que organizam e escalam processos internos.</div></div>
+            <div class="card"><div class="card-icon">📱</div><div class="card-t">Apps Mobile</div><div class="card-d">Experiências iOS & Android focadas em retenção e performance.</div></div>
+            <div class="card"><div class="card-icon">🌐</div><div class="card-t">Websites</div><div class="card-d">Design responsivo que transforma visitantes em clientes.</div></div>
+            <div class="card"><div class="card-icon">🧭</div><div class="card-t">Consultoria</div><div class="card-d">Ajudamos a escolher as melhores tecnologias para seu negócio.</div></div>
+        </div>
+    </div>
+    <div class="s-right">
+        <div class="img-box reveal">
+            <img src="./img/vision-pro.png" alt="Tecnologia de ponta">
+        </div>
+    </div>
+</section>
+
+<!-- SEC 3 — Diferenciais -->
+<section class="section">
+    <div class="s-left">
+        <div class="s-num-bg">03</div>
+        <div class="eyebrow reveal">Diferenciais</div>
+        <h2 class="s-title reveal">POR QUE<br>ESCOLHER<br>A FYNEXT?</h2>
+        <p class="s-desc reveal">O mercado está cheio de empresas que "fazem sites". Nós construímos o alicerce do seu sucesso futuro.</p>
+        <div class="reasons reveal">
+            <div class="reason"><span class="r-num">01</span><div><div class="r-title">Agilidade e Transparência</div><div class="r-desc">Metodologias ágeis com entregas contínuas e sem surpresas.</div></div></div>
+            <div class="reason"><span class="r-num">02</span><div><div class="r-title">Tecnologia de Vanguarda</div><div class="r-desc">Stacks modernos que garantem segurança e escalabilidade.</div></div></div>
+            <div class="reason"><span class="r-num">03</span><div><div class="r-title">Foco em UX/UI</div><div class="r-desc">Ergonomia digital que torna a experiência natural e satisfatória.</div></div></div>
+            <div class="reason"><span class="r-num">04</span><div><div class="r-title">Parceria Estratégica</div><div class="r-desc">Questionamos e nos envolvemos nos seus objetivos de negócio.</div></div></div>
+        </div>
+    </div>
+    <div class="s-right">
+        <div class="img-box reveal">
+            <img src="./img/apple-watch.png" alt="Tecnologia Fynext">
+        </div>
+    </div>
+</section>
+
+<!-- SEC 4 — Visão -->
+<section class="section">
+    <div class="s-left">
+        <div class="s-num-bg">04</div>
+        <div class="eyebrow reveal">Nossa Visão</div>
+        <h2 class="s-title reveal">ONDE<br>QUEREMOS<br>CHEGAR</h2>
+        <div class="vision-block reveal">
+            <p class="vision-text">Nossa visão é clara: ser a <strong>referência global em inovação e desenvolvimento</strong>, reconhecidos não pelo volume de projetos, mas pela <strong>magnitude do impacto</strong> que geramos.<br><br>Não acompanhamos tendências — <strong>nós as antecipamos</strong>. Na Fynext, o futuro não é algo que esperamos — é algo que <strong>codificamos todos os dias</strong>.</p>
+        </div>
+    </div>
+    <div class="s-right">
+        <div class="img-box reveal">
+            <img src="./img/air-pods.png" alt="Visão Fynext">
+        </div>
+    </div>
+</section>
+
+<script src="./neural-bg.js"></script>
+<script>
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){rx+=(mx-rx)*.15;ry+=(my-ry)*.15;cur.style.left=mx+'px';cur.style.top=my+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,.card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ring.style.width='50px';ring.style.height='50px';ring.style.borderColor='rgba(232,70,10,.7)';});
+    el.addEventListener('mouseleave',()=>{ring.style.width='34px';ring.style.height='34px';ring.style.borderColor='rgba(232,70,10,.45)';});
+});
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);}});},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+<script src="./fynext-chat.js"></script>
+</body>
+</html>
